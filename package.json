@@ -1,0 +1,22 @@
+{
+  "name": "@lifesystemsufpr/ai-toolkit",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Fonte neutra de regras e skills de IA, com adaptadores gerados para Cursor, Claude Code e Copilot.",
+  "type": "module",
+  "scripts": {
+    "sync": "tsx scripts/sync.ts",
+    "distribute": "tsx scripts/distribute.ts",
+    "distribute:dry": "DRY_RUN=1 tsx scripts/distribute.ts",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@octokit/rest": "^21.0.2"
+  },
+  "devDependencies": {
+    "@types/node": "^22.10.0",
+    "tsx": "^4.19.2",
+    "typescript": "^5.7.2"
+  },
+  "engines": { "node": ">=22" }
+}
