@@ -25,4 +25,5 @@ export const PROJECTS: ProjectProfile[] = [
   { repo: "ivcf-front",          profiles: ["ts", "frontend"], ides: ["cursor", "claude-code", "copilot"] },
   { repo: "ivcf-mobile",         profiles: ["ts", "mobile"],   ides: ["cursor", "claude-code", "copilot"] },
   { repo: "equilibrium-mobile",  profiles: ["kotlin"],         ides: ["cursor", "claude-code", "copilot"] },
+  { repo: "pipeline-demo",       profiles: ["ts", "backend"],  ides: ["cursor", "claude-code", "copilot"] },
 ];
