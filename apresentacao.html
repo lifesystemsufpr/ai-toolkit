@@ -1,0 +1,153 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>ai-toolkit — apresentação</title>
+<style>
+  :root{
+    --bg:#0f172a; --panel:#ffffff; --ink:#0f172a; --muted:#64748b;
+    --accent:#6366f1; --accent2:#8b5cf6; --line:#e2e8f0; --soft:#f8fafc;
+    --ok:#16a34a; --warn:#b45309;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;font:16px/1.6 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;color:var(--ink);background:var(--soft)}
+  .wrap{max-width:960px;margin:0 auto;padding:0 24px}
+  header{background:linear-gradient(135deg,var(--accent),var(--accent2));color:#fff;padding:56px 0 48px}
+  header .wrap{display:flex;flex-direction:column;gap:10px}
+  .kicker{font-size:13px;letter-spacing:.12em;text-transform:uppercase;opacity:.85}
+  h1{font-size:44px;margin:0;font-weight:800;letter-spacing:-.02em}
+  .lead{font-size:20px;max-width:640px;opacity:.95;margin:6px 0 0}
+  .pill{display:inline-block;background:rgba(255,255,255,.18);border:1px solid rgba(255,255,255,.35);border-radius:999px;padding:4px 12px;font-size:13px;margin-top:14px;width:max-content}
+  section{padding:40px 0;border-bottom:1px solid var(--line)}
+  h2{font-size:26px;margin:0 0 6px;letter-spacing:-.01em}
+  h2 .n{color:var(--accent);font-weight:800;margin-right:10px}
+  .sub{color:var(--muted);margin:0 0 22px}
+  .cards{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+  .card{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:18px 20px}
+  .card h3{margin:0 0 6px;font-size:17px}
+  .card p{margin:0;color:var(--muted);font-size:15px}
+  .flow{display:flex;flex-wrap:wrap;align-items:center;gap:10px;background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:22px}
+  .node{flex:1 1 120px;text-align:center;background:var(--soft);border:1px solid var(--line);border-radius:12px;padding:14px 10px}
+  .node b{display:block;font-size:15px}
+  .node span{font-size:12px;color:var(--muted)}
+  .arrow{color:var(--accent);font-size:22px;font-weight:800}
+  table{width:100%;border-collapse:collapse;background:var(--panel);border:1px solid var(--line);border-radius:14px;overflow:hidden}
+  th,td{text-align:left;padding:12px 16px;border-bottom:1px solid var(--line);font-size:15px}
+  th{background:var(--soft);font-weight:700}
+  tr:last-child td{border-bottom:0}
+  code{background:#eef2ff;color:#3730a3;padding:1px 6px;border-radius:6px;font-size:13px;font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace}
+  pre{background:#0f172a;color:#e2e8f0;padding:16px 18px;border-radius:12px;overflow:auto;font-size:13.5px;font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace}
+  .tag{display:inline-block;background:#ecfdf5;color:var(--ok);border:1px solid #bbf7d0;border-radius:999px;padding:2px 10px;font-size:12px;font-weight:600}
+  .tag.warn{background:#fffbeb;color:var(--warn);border-color:#fde68a}
+  ul.clean{list-style:none;padding:0;margin:0}
+  ul.clean li{padding:8px 0 8px 28px;position:relative;border-bottom:1px dashed var(--line)}
+  ul.clean li:before{content:"▹";position:absolute;left:6px;color:var(--accent);font-weight:800}
+  ul.clean li:last-child{border-bottom:0}
+  footer{padding:30px 0 60px;color:var(--muted);font-size:14px}
+  a{color:var(--accent);text-decoration:none}
+  a:hover{text-decoration:underline}
+  @media(max-width:640px){.cards{grid-template-columns:1fr}h1{font-size:34px}}
+</style>
+</head>
+<body>
+<header>
+  <div class="wrap">
+    <div class="kicker">Plataforma de Engenharia · lifesystemsufpr</div>
+    <h1>ai-toolkit</h1>
+    <p class="lead">Uma fonte única de verdade para as regras e skills de IA — escritas uma vez, entregues para Cursor, Claude Code e GitHub Copilot, em todos os repositórios.</p>
+    <span class="pill">github.com/lifesystemsufpr/ai-toolkit</span>
+  </div>
+</header>
+
+<section>
+  <div class="wrap">
+    <h2><span class="n">01</span>A ideia</h2>
+    <p class="sub">Por que isso existe.</p>
+    <div class="cards">
+      <div class="card">
+        <h3>O problema</h3>
+        <p>Cada pessoa usa uma IDE e um assistente de IA diferente (VS Code + Copilot, Cursor, Claude Code…). Sem um padrão central, as regras de qualidade e — o mais grave — as <b>regras de segurança clínica</b> divergem entre repos e nem chegam ao agente.</p>
+      </div>
+      <div class="card">
+        <h3>A solução</h3>
+        <p>Você escreve a regra <b>uma vez</b>, em markdown neutro. O toolkit gera automaticamente o formato de cada IDE, para cada repo. Mudou a regra? Muda num lugar só e propaga para os 3 ambientes e todos os repositórios.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="wrap">
+    <h2><span class="n">02</span>Como funciona</h2>
+    <p class="sub">Da fonte neutra ao PR em cada repo.</p>
+    <div class="flow">
+      <div class="node"><b>source/</b><span>regras + skills (markdown)</span></div>
+      <div class="arrow">→</div>
+      <div class="node"><b>sync.ts</b><span>gera por IDE</span></div>
+      <div class="arrow">→</div>
+      <div class="node"><b>build/&lt;repo&gt;</b><span>Cursor · Claude · Copilot</span></div>
+      <div class="arrow">→</div>
+      <div class="node"><b>distribute.ts</b><span>1 PR por repo</span></div>
+    </div>
+    <p style="color:var(--muted);margin-top:16px">Toda a lógica de formato fica isolada em <code>emitCursor</code> / <code>emitClaude</code> / <code>emitCopilot</code>. Se um formato de IDE mudar, ajusta-se só ali e roda o sync de novo.</p>
+  </div>
+</section>
+
+<section>
+  <div class="wrap">
+    <h2><span class="n">03</span>O que cada IDE recebe</h2>
+    <p class="sub">A mesma regra, três formatos.</p>
+    <table>
+      <tr><th>IDE</th><th>Arquivos gerados</th></tr>
+      <tr><td><b>Cursor</b></td><td><code>.cursor/rules/*.mdc</code></td></tr>
+      <tr><td><b>Claude Code</b></td><td><code>CLAUDE.md</code> + <code>.claude/skills/</code></td></tr>
+      <tr><td><b>GitHub Copilot</b></td><td><code>.github/copilot-instructions.md</code> + <code>instructions/</code> + <code>prompts/</code></td></tr>
+    </table>
+  </div>
+</section>
+
+<section>
+  <div class="wrap">
+    <h2><span class="n">04</span>O que tem dentro</h2>
+    <p class="sub">9 regras e 3 skills.</p>
+    <div class="cards">
+      <div class="card">
+        <h3>Regras</h3>
+        <p>base · typescript · backend-node · frontend-react · mobile-rn · kotlin · testing · commits-pr · <b>healthcare-domain</b></p>
+      </div>
+      <div class="card">
+        <h3>Skills</h3>
+        <p>generate-tests · review-clinical-change · write-github-workflow</p>
+      </div>
+    </div>
+    <p style="margin-top:18px"><span class="tag warn">Regra mais importante</span> &nbsp; <b>healthcare-domain</b> — LGPD + segurança clínica do IVCF-20. Sobrepõe as demais em conflito: o agente não faz merge autônomo em mudança clínica, de autenticação ou de schema.</p>
+  </div>
+</section>
+
+<section>
+  <div class="wrap">
+    <h2><span class="n">05</span>Para a equipe</h2>
+    <p class="sub">Como isso te afeta no dia a dia.</p>
+    <ul class="clean">
+      <li><b>As regras chegam sozinhas no seu repo:</b> ao dar merge no PR do ai-toolkit, você ganha <code>.cursor/rules</code>, <code>CLAUDE.md</code> e as instruções do Copilot — seu assistente de IA já passa a seguir o padrão.</li>
+      <li><b>Não edite os arquivos gerados à mão.</b> Eles são saída automática; a próxima sincronização sobrescreve.</li>
+      <li><b>Para criar ou mudar uma regra:</b> edite <code>source/rules/</code> ou <code>source/skills/</code>, rode <code>pnpm sync</code> e confira em <code>build/</code>.</li>
+      <li><b>Para publicar:</b> <code>pnpm distribute</code> abre 1 PR por repo com as regras atualizadas.</li>
+      <li><b>Adicionar uma IDE nova</b> (ex.: Windsurf) é uma função <code>emit</code> + uma linha no config. A fonte neutra não muda.</li>
+    </ul>
+    <pre>pnpm install
+pnpm sync                 # gera os adaptadores para todos os repos
+pnpm sync auth-service    # só um repo
+pnpm distribute           # abre 1 PR por repo</pre>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap">
+    ai-toolkit · plataforma de automação de engenharia da <b>lifesystemsufpr</b> ·
+    parte do trio <b>ai-toolkit</b> (regras de IA) + <b>devops-hub</b> (CI central) + <b>pipeline</b> (spec→código→PR→CI).
+  </div>
+</footer>
+</body>
+</html>
