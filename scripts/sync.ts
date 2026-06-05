@@ -32,7 +32,7 @@ const SRC = join(ROOT, "source");
 const OUT = join(ROOT, "build");
 
 // ---------- frontmatter parser (mínimo, sem dependência) ----------
-interface Doc {
+export interface Doc {
   meta: {
     id: string;
     title: string;
@@ -44,7 +44,13 @@ interface Doc {
   body: string;
 }
 
-function parseDoc(raw: string, file: string): Doc {
+/** Arquivo emitido (caminho relativo ao dir do repo + conteúdo). */
+export interface OutFile {
+  path: string;
+  content: string;
+}
+
+export function parseDoc(raw: string, file: string): Doc {
   const m = raw.match(/^---\n([\s\S]*?)\n---\n?([\s\S]*)$/);
   if (!m) throw new Error(`Frontmatter ausente em ${file}`);
   const [, fm, body] = m;
@@ -81,7 +87,7 @@ function loadDir(dir: string): Doc[] {
     .map((f) => parseDoc(readFileSync(join(full, f), "utf8"), `${dir}/${f}`));
 }
 
-function appliesToRepo(doc: Doc, repo: ProjectProfile): boolean {
+export function appliesToRepo(doc: Doc, repo: ProjectProfile): boolean {
   if (doc.meta.appliesTo.includes("all")) return true;
   return doc.meta.appliesTo.some((p) => repo.profiles.includes(p));
 }
@@ -91,8 +97,14 @@ function write(path: string, content: string) {
   writeFileSync(path, content.endsWith("\n") ? content : content + "\n");
 }
 
+/** Persiste os OutFile[] (caminhos relativos) sob repoDir. */
+function writeFiles(repoDir: string, files: OutFile[]) {
+  for (const f of files) write(join(repoDir, f.path), f.content);
+}
+
 // ---------- Cursor: .cursor/rules/<id>.mdc ----------
-function emitCursor(repoDir: string, rules: Doc[], skills: Doc[]) {
+export function emitCursor(rules: Doc[], skills: Doc[]): OutFile[] {
+  const out: OutFile[] = [];
   for (const r of rules) {
     const fm = [
       "---",
@@ -102,7 +114,7 @@ function emitCursor(repoDir: string, rules: Doc[], skills: Doc[]) {
       "---",
       "",
     ].join("\n");
-    write(join(repoDir, ".cursor", "rules", `${r.meta.id}.mdc`), fm + r.body);
+    out.push({ path: join(".cursor", "rules", `${r.meta.id}.mdc`), content: fm + r.body });
   }
   // Skills viram regras agent-requestable (alwaysApply false, descrição rica)
   for (const s of skills) {
@@ -114,12 +126,14 @@ function emitCursor(repoDir: string, rules: Doc[], skills: Doc[]) {
       "---",
       "",
     ].join("\n");
-    write(join(repoDir, ".cursor", "rules", `skill-${s.meta.id}.mdc`), fm + s.body);
+    out.push({ path: join(".cursor", "rules", `skill-${s.meta.id}.mdc`), content: fm + s.body });
   }
+  return out;
 }
 
 // ---------- Claude Code: CLAUDE.md + .claude/skills/<id>/SKILL.md ----------
-function emitClaude(repoDir: string, repo: string, rules: Doc[], skills: Doc[]) {
+export function emitClaude(repo: string, rules: Doc[], skills: Doc[]): OutFile[] {
+  const out: OutFile[] = [];
   const always = rules.filter((r) => r.meta.always);
   const scoped = rules.filter((r) => !r.meta.always);
 
@@ -141,16 +155,18 @@ function emitClaude(repoDir: string, repo: string, rules: Doc[], skills: Doc[]) 
     }
   }
 
-  write(join(repoDir, "CLAUDE.md"), parts.join("\n"));
+  out.push({ path: "CLAUDE.md", content: parts.join("\n") });
 
   for (const s of skills) {
     const fm = ["---", `name: ${s.meta.id}`, `description: ${s.meta.description ?? s.meta.title}`, "---", ""].join("\n");
-    write(join(repoDir, ".claude", "skills", s.meta.id, "SKILL.md"), fm + s.body);
+    out.push({ path: join(".claude", "skills", s.meta.id, "SKILL.md"), content: fm + s.body });
   }
+  return out;
 }
 
 // ---------- Copilot: copilot-instructions.md + instructions + prompts ----------
-function emitCopilot(repoDir: string, repo: string, rules: Doc[], skills: Doc[]) {
+export function emitCopilot(repo: string, rules: Doc[], skills: Doc[]): OutFile[] {
+  const out: OutFile[] = [];
   const always = rules.filter((r) => r.meta.always);
   const scoped = rules.filter((r) => !r.meta.always);
 
@@ -161,7 +177,7 @@ function emitCopilot(repoDir: string, repo: string, rules: Doc[], skills: Doc[])
     "",
     ...always.map((r) => r.body),
   ].join("\n");
-  write(join(repoDir, ".github", "copilot-instructions.md"), main);
+  out.push({ path: join(".github", "copilot-instructions.md"), content: main });
 
   // Regras com glob viram instruction files com applyTo
   for (const r of scoped) {
@@ -171,14 +187,15 @@ function emitCopilot(repoDir: string, repo: string, rules: Doc[], skills: Doc[])
       "---",
       "",
     ].join("\n");
-    write(join(repoDir, ".github", "instructions", `${r.meta.id}.instructions.md`), fm + r.body);
+    out.push({ path: join(".github", "instructions", `${r.meta.id}.instructions.md`), content: fm + r.body });
   }
 
   // Skills viram prompt files
   for (const s of skills) {
     const fm = ["---", `mode: agent`, `description: ${s.meta.description ?? s.meta.title}`, "---", ""].join("\n");
-    write(join(repoDir, ".github", "prompts", `${s.meta.id}.prompt.md`), fm + s.body);
+    out.push({ path: join(".github", "prompts", `${s.meta.id}.prompt.md`), content: fm + s.body });
   }
+  return out;
 }
 
 // ---------- main ----------
@@ -202,9 +219,9 @@ function main() {
     const skills = allSkills.filter((s) => appliesToRepo(s, repo));
     const repoDir = join(OUT, repo.repo);
 
-    if (repo.ides.includes("cursor")) emitCursor(repoDir, rules, skills);
-    if (repo.ides.includes("claude-code")) emitClaude(repoDir, repo.repo, rules, skills);
-    if (repo.ides.includes("copilot")) emitCopilot(repoDir, repo.repo, rules, skills);
+    if (repo.ides.includes("cursor")) writeFiles(repoDir, emitCursor(rules, skills));
+    if (repo.ides.includes("claude-code")) writeFiles(repoDir, emitClaude(repo.repo, rules, skills));
+    if (repo.ides.includes("copilot")) writeFiles(repoDir, emitCopilot(repo.repo, rules, skills));
 
     console.log(
       `✓ ${repo.repo.padEnd(20)} ${rules.length} regras · ${skills.length} skills · ${repo.ides.join(", ")}`
@@ -214,4 +231,7 @@ function main() {
   console.log(`\nGerado em build/. Próximo: distribuir com distribute.ts (abre PR por repo).`);
 }
 
-main();
+// Só roda como script (não ao ser importado pelos testes).
+const invokedDirectly =
+  process.argv[1] && resolve(process.argv[1]) === fileURLToPath(import.meta.url);
+if (invokedDirectly) main();
