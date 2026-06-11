@@ -3,12 +3,20 @@
     "target": "ES2022",
     "module": "ES2022",
     "moduleResolution": "Bundler",
-    "lib": ["ES2022"],
+    "lib": [
+      "ES2022"
+    ],
     "strict": true,
     "esModuleInterop": true,
     "skipLibCheck": true,
     "resolveJsonModule": true,
-    "noEmit": true
+    "noEmit": true,
+    "types": [
+      "node"
+    ]
   },
-  "include": ["scripts/**/*.ts", "config/**/*.ts"]
+  "include": [
+    "scripts/**/*.ts",
+    "config/**/*.ts"
+  ]
 }
